@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
 import '../models/transaction.dart';
+import 'add_transaction_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -160,23 +161,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _addTransaction() {
-    // Pour l'instant, on ajoute une transaction factice
-    // Dans la prochaine étape, on créera un formulaire
-    final newTransaction = Transaction(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      amount: 5000.0,
-      category: 'Nourriture',
-      date: DateTime.now(),
-      type: 'expense',
-      description: 'Courses alimentaires',
-      paymentMethod: 'orange_money',
-    );
-
-    setState(() {
-      _transactions.add(newTransaction);
-      _totalExpenses += newTransaction.amount;
-      _totalBalance = _totalIncome - _totalExpenses;
-    });
-  }
+ void _addTransaction() async {
+  final newTransaction = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => AddTransactionScreen(
+        onTransactionAdded: (transaction) {
+          // Callback appelé quand une transaction est ajoutée
+          setState(() {
+            _transactions.add(transaction);
+            
+            // Mise à jour des totaux
+            if (transaction.type == 'income') {
+              _totalIncome += transaction.amount;
+            } else {
+              _totalExpenses += transaction.amount;
+            }
+            _totalBalance = _totalIncome - _totalExpenses;
+          });
+        },
+      ),
+    ),
+  );
+}
 }
