@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/transaction.dart';
 import '../constants/app_constants.dart';
+import '../services/storage_service.dart';
 
 class AddTransactionScreen extends StatefulWidget {
-  final Function(Transaction) onTransactionAdded;
-
-  const AddTransactionScreen({super.key, required this.onTransactionAdded});
+  const AddTransactionScreen({super.key});
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -14,14 +13,12 @@ class AddTransactionScreen extends StatefulWidget {
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _formKey = GlobalKey<FormState>();
   
-  // Contrôleurs pour les champs du formulaire
   final _amountController = TextEditingController();
   String _selectedType = 'expense';
   String _selectedCategory = 'Nourriture';
   String _selectedPaymentMethod = 'cash';
   final _descriptionController = TextEditingController();
 
-  // Liste des méthodes de paiement spécifiques à la Côte d'Ivoire
   final List<String> _paymentMethods = [
     'cash',
     'orange_money', 
@@ -108,7 +105,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
               // Catégorie
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: const InputDecoration(
                   labelText: 'Catégorie',
                   border: OutlineInputBorder(),
@@ -134,7 +131,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
               // Méthode de paiement
               DropdownButtonFormField<String>(
-                value: _selectedPaymentMethod,
+                initialValue: _selectedPaymentMethod,
                 decoration: const InputDecoration(
                   labelText: 'Méthode de paiement',
                   border: OutlineInputBorder(),
@@ -183,7 +180,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       onPressed: () {
         setState(() {
           _selectedType = type;
-          // Reset category quand le type change
           _selectedCategory = type == 'income' 
               ? AppConstants.incomeCategories.first 
               : AppConstants.expenseCategories.first;
@@ -191,7 +187,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       },
       style: OutlinedButton.styleFrom(
         backgroundColor: isSelected 
-            ? const Color(AppConstants.primaryColor).withOpacity(0.1)
+            ? const Color(AppConstants.primaryColor).withAlpha(25)
             : null,
         side: BorderSide(
           color: isSelected 
@@ -211,7 +207,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
   }
 
-  void _saveTransaction() {
+  void _saveTransaction() async {
     if (_formKey.currentState!.validate()) {
       final newTransaction = Transaction(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -225,9 +221,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         paymentMethod: _selectedPaymentMethod,
       );
 
-      // Retour à l'écran précédent avec la nouvelle transaction
-      Navigator.pop(context);
-      widget.onTransactionAdded(newTransaction);
+      await StorageService.saveTransaction(newTransaction);
+
+      if (mounted) {
+        Navigator.pop(context);
+      }
     }
   }
 

@@ -1,11 +1,29 @@
-class Transaction {
+import 'package:hive/hive.dart';
+
+part 'transaction.g.dart';
+
+@HiveType(typeId: 0)
+class Transaction extends HiveObject {
+  @HiveField(0)
   final String id;
+  
+  @HiveField(1)
   final double amount;
+  
+  @HiveField(2)
   final String category;
+  
+  @HiveField(3)
   final DateTime date;
-  final String type; // 'income' ou 'expense'
+  
+  @HiveField(4)
+  final String type;
+  
+  @HiveField(5)
   final String description;
-  final String paymentMethod; // 'cash', 'orange_money', 'mtn_money', 'bank'
+  
+  @HiveField(6)
+  final String paymentMethod;
 
   Transaction({
     required this.id,
@@ -17,7 +35,6 @@ class Transaction {
     required this.paymentMethod,
   });
 
-  // Convertir en Map pour le stockage
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -30,7 +47,6 @@ class Transaction {
     };
   }
 
-  // Créer depuis Map
   factory Transaction.fromMap(Map<String, dynamic> map) {
     return Transaction(
       id: map['id'],
