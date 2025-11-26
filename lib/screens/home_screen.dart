@@ -4,6 +4,7 @@ import '../constants/app_constants.dart';
 import '../models/transaction.dart';
 import '../services/storage_service.dart';
 import 'add_transaction_screen.dart';
+import 'statistics_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Box<Transaction> transactionBox;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -52,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: const Color(AppConstants.primaryColor),
         elevation: 0,
         actions: [
-          if (transactionBox.isNotEmpty)
+          if (transactionBox.isNotEmpty && _currentIndex == 0)
             IconButton(
               icon: const Icon(Icons.delete_outline),
               onPressed: _showClearDataDialog,
@@ -60,32 +62,69 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
         ],
       ),
-      body: ValueListenableBuilder<Box<Transaction>>(
-        valueListenable: transactionBox.listenable(),
-        builder: (context, box, widget) {
-          final transactions = box.values.toList()
-            ..sort((a, b) => b.date.compareTo(a.date));
-
-          return Column(
-            children: [
-              // Carte du solde
-              _buildBalanceCard(),
-              
-              // Liste des transactions
-              Expanded(
-                child: transactions.isEmpty
-                    ? _buildEmptyState()
-                    : _buildTransactionsList(transactions),
-              ),
-            ],
-          );
+      body: _getCurrentScreen(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
         },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Accueil',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Statistiques',
+          ),
+        ],
+        selectedItemColor: const Color(AppConstants.primaryColor),
+        unselectedItemColor: Colors.grey,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addTransaction,
-        backgroundColor: const Color(AppConstants.primaryColor),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+      floatingActionButton: _currentIndex == 0 
+          ? FloatingActionButton(
+              onPressed: _addTransaction,
+              backgroundColor: const Color(AppConstants.primaryColor),
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
+    );
+  }
+
+  Widget _getCurrentScreen() {
+    switch (_currentIndex) {
+      case 0:
+        return _buildHomeContent();
+      case 1:
+        return const StatisticsScreen();
+      default:
+        return _buildHomeContent();
+    }
+  }
+
+  Widget _buildHomeContent() {
+    return ValueListenableBuilder<Box<Transaction>>(
+      valueListenable: transactionBox.listenable(),
+      builder: (context, box, widget) {
+        final transactions = box.values.toList()
+          ..sort((a, b) => b.date.compareTo(a.date));
+
+        return Column(
+          children: [
+            // Carte du solde
+            _buildBalanceCard(),
+            
+            // Liste des transactions
+            Expanded(
+              child: transactions.isEmpty
+                  ? _buildEmptyState()
+                  : _buildTransactionsList(transactions),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -313,12 +352,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _deleteTransaction(String id) async {
     await StorageService.deleteTransaction(id);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Transaction supprimée'),
-        backgroundColor: Colors.red,
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Transaction supprimée'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _showClearDataDialog() {
@@ -338,12 +379,14 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               StorageService.clearAllData();
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Toutes les données ont été effacées'),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Toutes les données ont été effacées'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Effacer'),
