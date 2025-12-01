@@ -5,7 +5,6 @@ import 'services/storage_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialiser Hive
   await StorageService.init();
   
   runApp(const FinTraceApp());

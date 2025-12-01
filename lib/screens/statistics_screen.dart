@@ -73,7 +73,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Sélecteur de période
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -91,7 +90,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
                 const SizedBox(height: 20),
 
-                // Cartes de résumé
                 Row(
                   children: [
                     Expanded(
@@ -116,13 +114,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
                 const SizedBox(height: 20),
 
-                // Dépenses par catégorie
                 if (expensesByCategory.isNotEmpty)
                   _buildCategorySection('Dépenses par Catégorie', expensesByCategory, totalExpenses, true),
 
                 const SizedBox(height: 20),
 
-                // Revenus par catégorie
                 if (incomeByCategory.isNotEmpty)
                   _buildCategorySection('Revenus par Catégorie', incomeByCategory, totalIncome, false),
               ],

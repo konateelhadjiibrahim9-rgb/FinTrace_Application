@@ -5,6 +5,8 @@ import '../models/transaction.dart';
 import '../services/storage_service.dart';
 import 'add_transaction_screen.dart';
 import 'statistics_screen.dart';
+import 'budgets_screen.dart';
+import 'export_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -79,6 +81,14 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.bar_chart),
             label: 'Statistiques',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_balance_wallet),
+            label: 'Budgets',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.import_export),
+            label: 'Export',
+          ),
         ],
         selectedItemColor: const Color(AppConstants.primaryColor),
         unselectedItemColor: Colors.grey,
@@ -99,6 +109,10 @@ class _HomeScreenState extends State<HomeScreen> {
         return _buildHomeContent();
       case 1:
         return const StatisticsScreen();
+      case 2:
+        return const BudgetsScreen();
+      case 3:
+        return const ExportScreen();
       default:
         return _buildHomeContent();
     }
@@ -113,10 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         return Column(
           children: [
-            // Carte du solde
             _buildBalanceCard(),
-            
-            // Liste des transactions
             Expanded(
               child: transactions.isEmpty
                   ? _buildEmptyState()
@@ -138,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(25),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -326,18 +337,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _getPaymentMethodText(String method) {
     switch (method) {
-      case 'orange_money':
-        return 'Orange Money';
-      case 'mtn_money':
-        return 'MTN Money';
-      case 'wave':
-        return 'Wave';
-      case 'cash':
-        return 'Espèces';
-      case 'bank':
-        return 'Banque';
-      default:
-        return method.toUpperCase();
+      case 'orange_money': return 'Orange Money';
+      case 'mtn_money': return 'MTN Money';
+      case 'wave': return 'Wave';
+      case 'cash': return 'Espèces';
+      case 'bank': return 'Banque';
+      default: return method.toUpperCase();
     }
   }
 

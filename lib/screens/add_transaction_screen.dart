@@ -12,7 +12,6 @@ class AddTransactionScreen extends StatefulWidget {
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _formKey = GlobalKey<FormState>();
-  
   final _amountController = TextEditingController();
   String _selectedType = 'expense';
   String _selectedCategory = 'Nourriture';
@@ -48,7 +47,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           key: _formKey,
           child: Column(
             children: [
-              // Type de transaction (Revenu/Dépense)
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -81,7 +79,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
               const SizedBox(height: 16),
 
-              // Montant
               TextFormField(
                 controller: _amountController,
                 keyboardType: TextInputType.number,
@@ -103,7 +100,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
               const SizedBox(height: 16),
 
-              // Catégorie
               DropdownButtonFormField<String>(
                 initialValue: _selectedCategory,
                 decoration: const InputDecoration(
@@ -129,7 +125,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
               const SizedBox(height: 16),
 
-              // Méthode de paiement
               DropdownButtonFormField<String>(
                 initialValue: _selectedPaymentMethod,
                 decoration: const InputDecoration(
@@ -157,7 +152,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
               const SizedBox(height: 16),
 
-              // Description
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(

@@ -3,15 +3,21 @@ import '../models/transaction.dart';
 
 class StorageService {
   static const String _transactionBoxName = 'transactions';
+  static const String _budgetBoxName = 'budgets';
   
   static Future<void> init() async {
     await Hive.initFlutter();
     Hive.registerAdapter(TransactionAdapter());
     await Hive.openBox<Transaction>(_transactionBoxName);
+    await Hive.openBox(_budgetBoxName);
   }
 
   static Box<Transaction> getTransactionBox() {
     return Hive.box<Transaction>(_transactionBoxName);
+  }
+
+  static Box getBudgetBox() {
+    return Hive.box(_budgetBoxName);
   }
 
   static Future<void> saveTransaction(Transaction transaction) async {
@@ -30,7 +36,9 @@ class StorageService {
   }
 
   static Future<void> clearAllData() async {
-    final box = getTransactionBox();
-    await box.clear();
+    final transactionBox = getTransactionBox();
+    final budgetBox = getBudgetBox();
+    await transactionBox.clear();
+    await budgetBox.clear();
   }
 }
