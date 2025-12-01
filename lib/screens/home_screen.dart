@@ -7,6 +7,7 @@ import 'add_transaction_screen.dart';
 import 'statistics_screen.dart';
 import 'budgets_screen.dart';
 import 'export_screen.dart';
+import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -89,6 +90,10 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.import_export),
             label: 'Export',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Recherche',
+          ),
         ],
         selectedItemColor: const Color(AppConstants.primaryColor),
         unselectedItemColor: Colors.grey,
@@ -113,6 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return const BudgetsScreen();
       case 3:
         return const ExportScreen();
+      case 4:
+        return const SearchScreen();
       default:
         return _buildHomeContent();
     }
